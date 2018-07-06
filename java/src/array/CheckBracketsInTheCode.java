@@ -6,27 +6,28 @@ public class CheckBracketsInTheCode {
 
     private String checkBracket(String str) {
 
-        Stack s = new Stack();
+        Stack<Bracket> s = new Stack<Bracket>();
 
-        char cin;
-        Element cout;
+        char next;
+        Bracket cout;
         for (int i = 0 ; i < str.length(); i++) {
-            cin = str.charAt(i);
+            next = str.charAt(i);
 
-            if (cin == '[' || cin == '{' || cin == '(') {
-                s.push(cin, i);
-            } else if (cin == ']' || cin == '}' || cin == ')') {
-                cout = s.pop();
+            if (next == '[' || next == '{' || next == '(') {
+                s.push(new Bracket(next, i));
+            } else if (next == ']' || next == '}' || next == ')') {
 
-                if ((cin == ']' && cout.c != '[') || (cin == '}' && cout.c != '{') || (cin == ')' && cout.c != '('))
+                if (s.top() == null || !s.top().match(next))
                     return Integer.toString(i + 1);
+                else
+                    s.pop();
             }
         }
 
         if (s.empty()) {
             return "success";
         } else {
-            return Integer.toString(s.pop().idx + 1);
+            return Integer.toString(s.pop().position + 1);
         }
 
     }
@@ -43,47 +44,65 @@ public class CheckBracketsInTheCode {
     }
 
 
-    public class Element {
-        public char c;
+    public class Bracket {
+        public char type;
 
-        public int idx;
+        public int position;
 
-        public Element(char c, int idx) {
-            this.c = c;
-            this.idx = idx;
+        public Bracket(char type, int position) {
+            this.type = type;
+            this.position = position;
+        }
+
+        public boolean match(char c) {
+            if (this.type == '[' && c == ']')
+                return true;
+            else if (this.type == '{' && c == '}')
+                return true;
+            else if (this.type == '(' && c == ')')
+                return true;
+
+            return false;
         }
     }
 
-    private class Stack {
+    private class Stack<E> {
         private Node head;
 
         private class Node {
-            private Element key;
+            private E key;
 
             private Node next;
 
-            public Node(char c, int idx) {
-                this.key = new Element(c, idx);
+            public Node(E data) {
+                this.key = data;
             }
         }
 
-        public void push(char c, int idx) {
-            Node node = new Node(c, idx);
+        public void push(E input) {
+            Node node = new Node(input);
 
             node.next = head;
             head = node;
         }
 
-        public Element pop() {
+        public E pop() {
             if (head == null)
                 return null;
 
             Node del = head;
             head = del.next;
-            Element returnValue = del.key;
+            E returnValue = del.key;
             del = null;
 
             return returnValue;
+        }
+
+        public E top() {
+            if (head == null)
+                return null;
+
+            return head.key;
         }
 
         public boolean empty() {

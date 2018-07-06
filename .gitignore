@@ -7,3 +7,6 @@
 # c exe/obj #
 /c++/*.exe
 /c++/*.obj
+
+# python #
+/python/*/__pycache__

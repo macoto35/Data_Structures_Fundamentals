@@ -25,5 +25,6 @@ class CheckBracketsInTheCodeTest {
         assertEquals("3", check.run("{[}"));
         assertEquals("success", check.run("foo(bar);"));
         assertEquals("10", check.run("foo(bar[i);"));
+        assertEquals("1", check.run("}"));
     }
 }
