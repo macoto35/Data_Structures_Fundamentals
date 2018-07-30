@@ -7,15 +7,15 @@ class PriorityQueueTest(unittest.TestCase):
 
     def test_parent(self):
         self.assertEqual(self.pq.parent(1), 0)
-        self.assertEqual(self.pq.parent(2), 1)
+        self.assertEqual(self.pq.parent(3), 1)
 
     def test_leftChild(self):
-        self.assertEqual(self.pq.leftChild(2), 4)
-        self.assertEqual(self.pq.leftChild(3), 6)
+        self.assertEqual(self.pq.leftChild(2), 5)
+        self.assertEqual(self.pq.leftChild(3), 7)
 
     def test_rightChild(self):
-        self.assertEqual(self.pq.rightChild(2), 5)
-        self.assertEqual(self.pq.rightChild(3), 7)
+        self.assertEqual(self.pq.rightChild(2), 6)
+        self.assertEqual(self.pq.rightChild(3), 8)
 
     def test_shiftUp(self):
         self.pq.insert(42)
@@ -27,7 +27,7 @@ class PriorityQueueTest(unittest.TestCase):
         self.pq.insert(12)
         self.pq.insert(11)
 
-        self.pq.shiftUp(6)
+        self.pq.shiftUp(5)
         self.assertEqual(self.pq.toString(), '42,29,32,14,7,18,12,11')
 
     def test_shiftDown(self):
@@ -40,7 +40,7 @@ class PriorityQueueTest(unittest.TestCase):
         self.pq.insert(12)
         self.pq.insert(11)
         
-        self.pq.shiftDown(1)
+        self.pq.shiftDown(0)
         self.assertEqual(self.pq.toString(), '29,14,18,13,7,18,12,11')
 
     def test_insert(self):
@@ -90,7 +90,7 @@ class PriorityQueueTest(unittest.TestCase):
         self.pq.insert(12)
         self.pq.insert(11)
         
-        self.pq.remove(4)
+        self.pq.remove(3)
         self.assertEqual(self.pq.toString(), '42,29,18,11,7,18,12')
 
     def test_changePriority(self):
@@ -103,7 +103,7 @@ class PriorityQueueTest(unittest.TestCase):
         self.pq.insert(12)
         self.pq.insert(11)
 
-        self.pq.changePriority(6, 32)
+        self.pq.changePriority(5, 32)
         self.assertEqual(self.pq.toString(), '42,29,32,14,7,18,12,11')
 
 if __name__ == '__main__':

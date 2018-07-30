@@ -3,14 +3,14 @@ package priorityQueue;
 public class PriorityQueue {
     private int[] H = new int[15];
 
-    private int size = 0;
+    private int size = -1;
 
-    private int maxSize = 15;
+    private int maxSize = 14;
 
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < this.size; i++) {
+        for (int i = 0; i <= this.size; i++) {
             sb.append(this.H[i]);
             sb.append(",");
         }
@@ -19,15 +19,15 @@ public class PriorityQueue {
     }
 
     private int parent(int i) {
-        return (int) Math.floor(i / 2);
+        return (int) Math.floor((i - 1) / 2);
     }
 
     private int leftChild(int i) {
-        return i * 2;
+        return i * 2 + 1;
     }
 
     private int rightChild(int i) {
-        return i * 2 + 1;
+        return i * 2 + 2;
     }
 
     private void swap(int i, int j) {
@@ -37,9 +37,9 @@ public class PriorityQueue {
     }
 
     private void shiftUp(int i) {
-        while (i > 1 && this.H[i - 1] > this.H[this.parent(i) - 1] ) {
+        while (i > 0 && this.H[i] > this.H[this.parent(i)] ) {
             int p = this.parent(i);
-            this.swap(i - 1, p - 1);
+            this.swap(i, p);
             i = p;
         }
     }
@@ -49,15 +49,15 @@ public class PriorityQueue {
 
         if (i <= this.size) {
             int l = this.leftChild(i);
-            if (l <= this.size && this.H[maxIdx - 1] < this.H[l - 1])
+            if (l <= this.size && this.H[maxIdx] < this.H[l])
                 maxIdx = l;
 
             int r = this.rightChild(i);
-            if (r <= this.size && this.H[maxIdx - 1] < this.H[r - 1])
+            if (r <= this.size && this.H[maxIdx] < this.H[r])
                 maxIdx = r;
 
             if (i != maxIdx) {
-                this.swap(i - 1, maxIdx - 1);
+                this.swap(i, maxIdx);
                 this.shiftDown(maxIdx);
             }
         }
@@ -67,37 +67,37 @@ public class PriorityQueue {
         if (this.size == this.maxSize)
             throw new IndexOutOfBoundsException();
         this.size += 1;
-        this.H[this.size - 1] = data;
+        this.H[this.size] = data;
         this.shiftUp(this.size);
     }
 
     public int extractMax() {
-        if (this.size == 0)
+        if (this.size == -1)
             throw new NullPointerException();
 
         int result = this.H[0];
-        this.H[0] = this.H[this.size - 1];
+        this.H[0] = this.H[this.size];
         this.size -= 1;
-        this.shiftDown(1);
+        this.shiftDown(0);
 
         return result;
     }
 
     public void remove(int i) {
-        if (i > this.size || i < 1)
+        if (i > this.size || i < 0)
             throw new NullPointerException();
 
-        this.H[i - 1] = this.H[0] + 1;
+        this.H[i] = this.H[0] + 1;
         this.shiftUp(i);
         this.extractMax();
     }
 
     public void changePrority(int i, int data) {
-        if (i > this.size || i < 1)
+        if (i > this.size || i < 0)
             throw new NullPointerException();
 
-        int old = this.H[i - 1];
-        this.H[i - 1] = data;
+        int old = this.H[i];
+        this.H[i] = data;
         if (data > old)
             this.shiftUp(i);
         else
