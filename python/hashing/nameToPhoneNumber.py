@@ -40,6 +40,8 @@ class NameToPhoneNumber:
         for pair in chain:
             if pair.key == key:
                 pair.value = value
+                return
+		
         chain.append(self.Pair(key, value))
 
     def get(self, key):

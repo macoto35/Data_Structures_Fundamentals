@@ -46,6 +46,7 @@ class PhoneNumberToName:
         for pair in chain:
             if pair.key == key:
                 pair.value = value
+				return
 
         chain.append(pair)
 
