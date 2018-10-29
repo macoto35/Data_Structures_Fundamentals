@@ -1,15 +1,15 @@
 package binarySearchTree;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BinarySearchTreeTest {
-
     BinarySearchTree tree;
 
     @BeforeEach
@@ -24,12 +24,12 @@ public class BinarySearchTreeTest {
     */
     private Node getRoot() {
         Node root = new Node(7, null);
-        root.left = new Node(4, root);
-        root.right = new Node(13, root);
-        root.left.left = new Node(1, root.left);
-        root.left.right = new Node(6, root.left);
-        root.right.left = new Node(10, root.right);
-        root.right.right = new Node(15, root.right);
+        Node left = root.left = new Node(4, root);
+        Node right = root.right = new Node(13, root);
+        left.left = new Node(1, left);
+        left.right = new Node(6, left);
+        right.left = new Node(10, right);
+        right.right = new Node(15, right);
 
         return root;
     }
@@ -37,18 +37,26 @@ public class BinarySearchTreeTest {
     @Test
     public void find() {
         Node root = this.getRoot();
+
         assertEquals(7, this.tree.find(7, root).key);
-        assertEquals(6, this.tree.find(6, root).key);
         assertEquals(13, this.tree.find(13, root).key);
-        assertEquals(6, this.tree.find(5, root).key);
+        assertEquals(6, this.tree.find(6, root).key);
+        assertEquals(10, this.tree.find(10, root).key);
+        assertEquals(1, this.tree.find(0, root).key);
+        assertEquals(1, this.tree.find(2, root).key);
+        assertEquals(10, this.tree.find(8, root).key);
+        assertEquals(15, this.tree.find(16, root).key);
     }
 
     @Test
     public void next() {
         Node root = this.getRoot();
-        assertNull(this.tree.next(this.tree.find(15, root)));
+
+        assertEquals(4, this.tree.next(this.tree.find(1, root)).key);
         assertEquals(7, this.tree.next(this.tree.find(6, root)).key);
+        assertEquals(6, this.tree.next(this.tree.find(4, root)).key);
         assertEquals(10, this.tree.next(this.tree.find(7, root)).key);
+        assertNull(this.tree.next(this.tree.find(15, root)));
     }
 
     @Test
@@ -61,45 +69,53 @@ public class BinarySearchTreeTest {
 
     @Test
     public void insert() {
-        Node root = new Node(7, null);
-        this.tree.insert(4, root);
-        this.tree.insert(13, root);
-        this.tree.insert(1, root);
-        this.tree.insert(6, root);
-        this.tree.insert(10, root);
-        this.tree.insert(15, root);
-        this.tree.insert(3, root);
+        /*
+                7
+            4       13
+         1    6   10   15
+          3
+        */
+        Node root = this.tree.insert(7, null);
+        root = this.tree.insert(4, root);
+        root = this.tree.insert(13, root);
+        root = this.tree.insert(1, root);
+        root = this.tree.insert(6, root);
+        root = this.tree.insert(10, root);
+        root = this.tree.insert(15, root);
+        root = this.tree.insert(3, root);
 
-        assertEquals(4, this.tree.find(4, root).key);
-        assertEquals(13, this.tree.find(13, root).key);
-        assertEquals(1, this.tree.find(1, root).key);
-        assertEquals(6, this.tree.find(6, root).key);
-        assertEquals(10, this.tree.find(10, root).key);
-        assertEquals(15, this.tree.find(15, root).key);
-        assertEquals(3, this.tree.find(3, root).key);
+        assertEquals(7, root.key);
+        assertEquals(4, root.left.key);
+        assertEquals(13, root.right.key);
+        assertEquals(1, root.left.left.key);
+        assertEquals(6, root.left.right.key);
+        assertEquals(10, root.right.left.key);
+        assertEquals(15, root.right.right.key);
+        assertEquals(3, root.left.left.right.key);
 
-        List<Integer> result = new ArrayList<Integer>();
+        List<Integer> result = new ArrayList();
         this.tree.toString(root, result);
         assertEquals("1,3,4,6,7,10,13,15", result.stream().map(i -> i.toString()).collect(Collectors.joining(",")));
     }
 
     @Test
     public void delete() {
-        Node root = new Node(7, null);
-        this.tree.insert(4, root);
-        this.tree.insert(13, root);
-        this.tree.insert(1, root);
-        this.tree.insert(6, root);
-        this.tree.insert(10, root);
-        this.tree.insert(15, root);
-        this.tree.insert(3, root);
+        Node root = this.tree.insert(7, null);
+        root = this.tree.insert(4, root);
+        root = this.tree.insert(13, root);
+        root = this.tree.insert(1, root);
+        root = this.tree.insert(6, root);
+        root = this.tree.insert(10, root);
+        root = this.tree.insert(15, root);
+        root = this.tree.insert(3, root);
         this.tree.root = root;
 
         for (int i = 0 ; i < 8 ; i++) {
-            this.tree.root = this.tree.remove(this.tree.root);
+            // this.tree.root = this.tree.remove(this.tree.root);
+            this.tree.remove(this.tree.root);
             List<Integer> result = new ArrayList<Integer>();
             this.tree.toString(this.tree.root, result);
-            System.out.println(result.stream().map(val -> val.toString()).collect(Collectors.joining(",")));
+            System.out.println("result: " + result.stream().map(val -> val.toString()).collect(Collectors.joining(",")));
         }
     }
 }
