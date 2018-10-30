@@ -116,7 +116,7 @@ public class BinarySearchTree {
 
             if (next.parent.left != null && next.parent.left.key == next.key)
                 next.parent.left = next.right;
-            
+
             if (next.parent.right != null && next.parent.right.key == next.key)
                 next.parent.right = next.right;
         }
