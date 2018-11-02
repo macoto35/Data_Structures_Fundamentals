@@ -1,153 +1,205 @@
-class Node:
-    def __init__(self, key, parent, height = 1):
-        self.key = key
-        self.parent = parent
-        self.left = None
-        self.right = None
-        self.height = height
+from node import Node
 
 class AvlTree:
-    result = None
+    
+    def getRoot(self, node):
+        if node.parent is None:
+            return node
+        return self.getRoot(node.parent)
 
-    def getTree(self, node):
-        if node is None:
-            return
-        self.getTree(node.left)
-        self.result.append(node.key)
-        self.getTree(node.right)
-
-    def find(self, key, node):
-        if node.key == key:
+    def _find(self, key, node):
+        if key == node.key:
             return node
 
-        if node.key > key:
-            if node.left is None:
-                return node
-            return self.find(key, node.left)
-        else:
+        if key > node.key:
             if node.right is None:
                 return node
-            return self.find(key, node.right)
-
-    def insert(self, key, root):
-        node = self.find(key, root)
-        newNode = Node(key, node)
-
-        if node.key > key:
-            node.left = newNode
+            return self._find(key, node.right)
         else:
+            if node.left is None:
+                return node
+            return self._find(key, node.left)
+
+    def _insert(self, key, root):
+        if root is None:
+            return Node(key, None)
+
+        node = self._find(key, root)
+        newNode = Node(key, node)
+        
+        if key > node.key:
             node.right = newNode
+        else:
+            node.left = newNode
+        
+        return root
+
+    def avlInsert(self, key, root):
+        #print('AVL Insert: ', key)
+        root = self._insert(key, root)
+        node = self._find(key, root)
+        self._rebalance(node)
 
         return root
 
-    def getRootNode(self, node):
-        if node.parent is None:
-            return node
-        return self.getRootNode(node.parent)
+    def _rebalance(self, node):
+        #print('Rebalance: ', node.key, ' | ', self._getHeight(node.left) , '/', self._getHeight(node.right))
+        if self._getHeight(node.left) > self._getHeight(node.right) + 1:
+            self._rebalanceRight(node)
 
-    def avlInsert(self, key, root):
-        root = self.insert(key, root)
-        node = self.find(key, root)
-        self.rebalance(node)
+        if self._getHeight(node.right) > self._getHeight(node.left) + 1:
+            self._rebalanceLeft(node)
 
-        return self.getRootNode(root)
+        self._adjustHeight(node)
 
-    def rebalance(self, node):
-        parent = node.parent
-        leftHeight = self.defaultHeight(node.left)
-        rightHeight = self.defaultHeight(node.right)
-        print('enter rebalance: ', node.key, leftHeight, rightHeight)
+        p = node.parent
+        if p is not None:
+            self._rebalance(p)
 
-        if leftHeight > rightHeight + 1:
-            self.rebalanceRight(node)
-        if leftHeight + 1 < rightHeight:
-            self.rebalanceLeft(node)
+    def _getHeight(self, node):
+        return 0 if node is None else node.height
 
-        self.adjustHeight(node)
+    def _rebalanceRight(self, node):
+        #print('Rebalance Right: ', node.key)
+        pivot = node.left
+        if self._getHeight(pivot.right) > self._getHeight(pivot.left):
+            self._rotateLeft(pivot)
+        self._rotateRight(node)
 
-        if parent is not None:
-            self.rebalance(parent)
+    def _rebalanceLeft(self, node):
+        #print('Rebalance Left: ', node.key)
+        pivot = node.right
+        if self._getHeight(pivot.left) > self._getHeight(pivot.right):
+            self._rotateRight(pivot)
+        self._rotateLeft(node)
+
+    def _rotateRight(self, node):
+        #print('Rotate Right: ', node.key)
+        p = node.parent
+        b = node.left
+        e = b.right
+
+        if p is not None:
+            if p.left is not None and p.left.key == node.key:
+                p.left = b
+            if p.right is not None and p.right.key == node.key:
+                p.right = b
+        b.parent = p
+
+        b.right = node
+        node.parent = b
+
+        node.left = e
+        if e is not None:
+            e.parent = node
     
-    def rebalanceRight(self, node):
-        print('enter rebalanceright: ', node.key)
-        m = node.left
-        leftHeight = self.defaultHeight(m.left)
-        rightHeight = self.defaultHeight(m.right)
-
-        if rightHeight > leftHeight:
-            self.rotateLeft(m)
-        self.rotateRight(node)
-
-    def rotateRight(self, node):
-        print('rotate right: ', node.key)
-        z = node
-        y = node.left
+    def _rotateLeft(self, node):
+        #print('Rotate Left: ', node.key)
         p = node.parent
+        c = node.right
+        d = c.left
 
-        y.parent = p
         if p is not None:
             if p.left is not None and p.left.key == node.key:
-                p.left = y
-            elif p.right is not None and p.right.key == node.key:
-                p.right = y
+                p.left = c
+            if p.right is not None and p.right.key == node.key:
+                p.right = c
+        c.parent = p
 
-        z.left = y.right
-        if y.right is not None:
-            z.left.parent = z
+        c.left = node
+        node.parent = c
 
-        y.right = z
-        z.parent = y
+        node.right = d
+        if d is not None:
+            d.parent = node
 
-        if p is not None:
-            self.adjustHeight(p)
-        else:
-            self.adjustHeight(y)
-
-    def rebalanceLeft(self, node):
-        print('enter rebalanceLeft: ', node.key)
-        m = node.right
-        leftHeight = self.defaultHeight(m.left)
-        rightHeight = self.defaultHeight(m.right)
-        
-        if leftHeight > rightHeight:
-            self.rotateRight(m)
-        self.rotateLeft(node)
-
-    def rotateLeft(self, node):
-        print('rotate left: ', node.key)
-        z = node
-        y = z.right
-        p = node.parent
-
-        y.parent = p
-        if p is not None:
-            if p.left is not None and p.left.key == node.key:
-                p.left = y
-            elif p.right is not None and p.right.key == node.key:
-                p.right = y
-        
-        z.right = y.left
-        if y.left is not None:
-            y.left.parent = z
-
-        y.left = z
-        z.parent = y
-
-        if p is not None:
-            self.adjustHeight(p)
-        else:
-            self.adjustHeight(y)
-
-    def adjustHeight(self, node):
+    def _adjustHeight(self, node):
         if node is None:
             return 0
-
-        #print('enter height: ', node.key)
-        node.height = 1 + max(self.adjustHeight(node.left), self.adjustHeight(node.right))
-        print('----->set height: ', node.key, ' - ', node.height)
         
+        node.height = max(self._adjustHeight(node.left), self._adjustHeight(node.right)) + 1
+        #print('Adjust Height: ', node.key, ' / ', node.height)
         return node.height
-    
-    def defaultHeight(self, node):
-        return 0 if node is None else node.height
+
+    def bfsPrint(self, root):
+        if root is None:
+            return
+
+        result = []
+        result.append(root)
+
+        while (len(result) > 0):
+            node = result.pop(0)
+            print(node.key, '(', node.height, ')', end=' ')
+            
+            if node.left is not None:
+                result.append(node.left)
+            if node.right is not None:
+                result.append(node.right)
+
+    def avlRemove(self, node):
+        tmp = self._remove(node)
+        
+        if tmp is None:
+            return None
+
+        self._rebalance(tmp)
+        
+        return self.getRoot(tmp)
+
+    def _remove(self, node):
+        if node.right is None:
+            p = node.parent
+            l = node.left
+
+            if l is not None:
+                l.parent = p
+            
+            if p is not None:
+                if p.left is not None and p.left.key == node.key:
+                    p.left = l
+                if p.right is not None and p.right.key == node.key:
+                    p.right = l
+                return p
+            else:
+                return l
+            
+        else:
+            nextNode = self._next(node)
+            node.key = nextNode.key
+
+            p = nextNode.parent
+            r = nextNode.right
+
+            if p is not None:
+                if p.left is not None and p.left.key == nextNode.key:
+                    p.left = r
+                if p.right is not None and p.right.key == nextNode.key:
+                    p.right = r
+
+            if r is not None:
+                r.parent = p
+
+            return p
+
+    def _next(self, node):
+        if node.right is not None:
+            return self._leftDecendant(node.right)
+        else:
+            return self._rightAncestor(node.key, node.parent)
+
+    def _leftDecendant(self, node):
+        if node.left is None:
+            return node
+        return self._leftDecendant(node.left)
+
+    def _rightAncestor(self, key, node):
+        if node is None:
+            return None
+
+        if key < node.key:
+            return node
+        else:
+            return self._rightAncestor(key, node.parent)
+
 
