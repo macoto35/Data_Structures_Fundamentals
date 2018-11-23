@@ -281,7 +281,7 @@ public class AvlTreeMs {
     public Map<String, Node> avlSplit(Node root, int key) {
         if (root == null)
             return null;
-        
+
         if (key < root.key) {
             Map<String, Node> result = this.split(root.left, key);
             result.put("r2", this.avlTreeMergeWithRoot(result.get("r2"), root.right, root));
