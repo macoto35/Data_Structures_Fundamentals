@@ -64,11 +64,11 @@ class OrderStatisticsTest(unittest.TestCase):
        self.assertEqual('4,2,1,1', self.stat.bfsPrint(result, 'size'))
 
     def test_orderStatistic(self):
-        root = Node(15, None, 4, 9)
-        root.left = left = Node(2, root, 3, 6)
+        root = Node(15, None, 5, 9)
+        root.left = left = Node(2, root, 4, 6)
         root.right = right = Node(16, root, 2, 2)
         left.left = Node(1, left, 1, 1)
-        left.right = lr = Node(4, left, 2, 4)
+        left.right = lr = Node(4, left, 3, 4)
         right.right = Node(17, right, 1, 1)
         lr.left = Node(3, lr, 1, 1)
         lr.right = lrr = Node(7, lr, 2, 2)
